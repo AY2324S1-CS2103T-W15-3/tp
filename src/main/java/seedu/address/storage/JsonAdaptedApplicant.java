@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.person.Applicant;
-import seedu.address.model.person.fields.InterviewTime;
 import seedu.address.model.person.fields.Name;
 import seedu.address.model.person.fields.Phone;
 
@@ -18,17 +17,14 @@ public class JsonAdaptedApplicant {
 
     private final String name;
     private final String phone;
-    private final String interviewTime;
 
     /**
      * Constructs a {@code JsonAdaptedApplicant} with the given applicant details.
      */
     @JsonCreator
-    public JsonAdaptedApplicant(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
-                                @JsonProperty("interviewTime") String interviewTime) {
+    public JsonAdaptedApplicant(@JsonProperty("name") String name, @JsonProperty("phone") String phone) {
         this.name = name;
         this.phone = phone;
-        this.interviewTime = interviewTime;
     }
 
     /**
@@ -37,11 +33,6 @@ public class JsonAdaptedApplicant {
     public JsonAdaptedApplicant(Applicant source) {
         name = source.getName().fullName;
         phone = source.getPhone().value;
-        if (source.getInterviewTime().getTime() == null) {
-            interviewTime = "Interview time has not been set";
-        } else {
-            interviewTime = source.getInterviewTime().getTime();
-        }
     }
 
     /**
@@ -64,24 +55,8 @@ public class JsonAdaptedApplicant {
         if (!Phone.isValidPhone(phone)) {
             throw new IllegalValueException(Phone.MESSAGE_CONSTRAINTS);
         }
-
-        if (interviewTime == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT,
-                    InterviewTime.class.getSimpleName()));
-        }
-
-        if (!InterviewTime.isValidTime(interviewTime)) {
-            throw new IllegalValueException(InterviewTime.MESSAGE_CONSTRAINTS);
-        }
-
         final Phone modelPhone = new Phone(phone);
 
-        final Applicant applicant = new Applicant(modelName, modelPhone);
-
-        if (this.interviewTime != null) {
-            final InterviewTime time = new InterviewTime(interviewTime);
-            applicant.addInterviewTime(time);
-        }
-        return applicant;
+        return new Applicant(modelName, modelPhone);
     }
 }

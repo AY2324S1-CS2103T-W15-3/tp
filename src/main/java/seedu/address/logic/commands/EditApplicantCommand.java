@@ -1,7 +1,6 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_INTERVIEW;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
@@ -17,7 +16,6 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Applicant;
-import seedu.address.model.person.fields.InterviewTime;
 import seedu.address.model.person.fields.Name;
 import seedu.address.model.person.fields.Phone;
 
@@ -34,8 +32,7 @@ public class EditApplicantCommand extends Command {
             + "Existing values will be overwritten by the input values.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + PREFIX_NAME + " {applicantName} "
-            + PREFIX_PHONE + " {phoneNumber} "
-            + PREFIX_INTERVIEW + "{interviewTime}\n"
+            + PREFIX_PHONE + " {phoneNumber} \n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_NAME + " Johnny Doe "
             + PREFIX_PHONE + " 91234567";
@@ -90,13 +87,8 @@ public class EditApplicantCommand extends Command {
 
         Name updatedName = editApplicantDescriptor.getName().orElse(applicantToEdit.getName());
         Phone updatedPhone = editApplicantDescriptor.getPhone().orElse(applicantToEdit.getPhone());
-        InterviewTime updatedInterviewTime = editApplicantDescriptor.getInterviewTime()
-                .orElse(applicantToEdit.getInterviewTime());
 
-        Applicant newApplicant = new Applicant(updatedName, updatedPhone);
-        newApplicant.addInterviewTime(updatedInterviewTime);
-
-        return newApplicant;
+        return new Applicant(updatedName, updatedPhone);
     }
 
     @Override
@@ -130,7 +122,6 @@ public class EditApplicantCommand extends Command {
     public static class EditApplicantDescriptor {
         private Name name;
         private Phone phone;
-        private InterviewTime interviewTime;
 
         public EditApplicantDescriptor() {
         }
@@ -142,14 +133,13 @@ public class EditApplicantCommand extends Command {
         public EditApplicantDescriptor(EditApplicantDescriptor toCopy) {
             setName(toCopy.name);
             setPhone(toCopy.phone);
-            setInterviewTime(toCopy.interviewTime);
         }
 
         /**
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, phone, interviewTime);
+            return CollectionUtil.isAnyNonNull(name, phone);
         }
 
         public void setName(Name name) {
@@ -168,14 +158,6 @@ public class EditApplicantCommand extends Command {
             return Optional.ofNullable(phone);
         }
 
-        public void setInterviewTime(InterviewTime interviewTime) {
-            this.interviewTime = interviewTime;
-        }
-
-        public Optional<InterviewTime> getInterviewTime() {
-            return Optional.ofNullable(interviewTime);
-        }
-
         @Override
         public boolean equals(Object other) {
             if (other == this) {
@@ -189,8 +171,7 @@ public class EditApplicantCommand extends Command {
 
             EditApplicantDescriptor otherEditApplicantDescriptor = (EditApplicantDescriptor) other;
             return Objects.equals(name, otherEditApplicantDescriptor.name)
-                    && Objects.equals(phone, otherEditApplicantDescriptor.phone)
-                    && Objects.equals(interviewTime, otherEditApplicantDescriptor.interviewTime);
+                    && Objects.equals(phone, otherEditApplicantDescriptor.phone);
         }
 
         @Override
@@ -198,7 +179,6 @@ public class EditApplicantCommand extends Command {
             return new ToStringBuilder(this)
                     .add("name", name)
                     .add("phone", phone)
-                    .add("interview time", interviewTime)
                     .toString();
         }
     }
